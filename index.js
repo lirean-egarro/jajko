@@ -47,9 +47,7 @@ router.post('/user', function(req, res) {
 	if(req.body != "undefined") {
 		UM.create(req.body.email,req.body.password,function(err){
 			if(err) {
-				res.statusCode = 404;
-				res.setHeader('Content-Type','application/json')
-				res.end(JSON.stringify(err));
+				done(err)
 			} else {
 				res.statusCode = 200
 				res,setHeader('Content-Type','text/plain')
@@ -57,12 +55,13 @@ router.post('/user', function(req, res) {
 			}
 		});
 	} else {
-		res.send({ message:"Request does not have a body" },400);
+		done({ message:"Request does not have a body" })
 	}
 });
 
 var server = http.createServer(function(req,res){
-        router(req,res, finalhandler(req,res));
+		var done = finalhandler(req,res)
+        router(req, res, done)
 });
 
 console.log('Server running on port 8082');

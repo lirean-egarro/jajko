@@ -20,62 +20,62 @@ function createDBConnection(onCreate) {
 /* Exported functions. */
 
 exports.login = function(email,password,callback) {
-	var doc = userCollection.findOne({'email':email,'password':password});
-	if(doc) {
-	//Here we will generate a token for this session and store in the document!
-		var token = generateToken();
-		doc.token = token;
-		userCollection.save(doc, {safe:true}, function(err) {
-			if(!err) {	
-				callback(null,token);
-			} else {
-				callback({ message:"Error processing login. Cannot store session token? " + err },null);
-			}
-		});
-        } else {
-		callback({ message:"Wrong credentials. Please try again." },null);	
-	}
+	userCollection.findOne({'email':email,'password':password},function(err,doc){
+		if(doc) {
+			//Here we will generate a token for this session and store in the document!
+			var token = generateToken();
+			doc.token = token;
+			userCollection.save(doc, {safe:true}, function(err) {
+				if(!err) {	
+					callback(null,token);
+				} else {
+					callback({ message:"Error processing login. Cannot store session token? " + err },null);
+				}
+			});
+		} else {
+			callback({ message:"Wrong credentials. Please try again." },null);	
+		}
+	});
 }
 
 exports.processToken = function(email,token,callback) {
-	var doc = userCollection.findOne({'email':email,'token':token});
-	if(doc) {
-		callback(null,doc);
-	} else {
-		callback({ message:"The token for user is invalid!" },null);
-	}	
+	userCollection.findOne({'email':email,'token':token},function(err,doc){
+		if(doc) {
+			callback(null,doc);
+		} else {
+			callback({ message:"The token for user is invalid!" },null);
+		}	
+	});
 }
 
 exports.create = function(email,password,callback) {
 	if(email != "undefined" && password != "undefined") {
-		var query = {};
-		query.email = email;
-		console.log('Trying to findOne:',query);
-		var doc = userCollection.findOne(query);
-		console.log(util.inspect(doc,false,null));
-		if(doc) {
-			console.log('Found a document!')
-			callback({ message:"There seems to be a user with this email address." });
-		} else {
-			console.log('New document!')
-			if(email === null || password === null || email.length < 5 || password.length < 5) {
-				console.log('Invoking callback');
-				callback({ message:"Wrong email or password. Both parameters must have at least length 5" });	
+		userCollection.findOne({'email':email},function(err,doc){
+			console.log(util.inspect(doc,false,null));
+			if(doc) {
+				console.log('Found a document!')
+				callback({ message:"There seems to be a user with this email address." });
 			} else {
-			//Create the user:
-				console.log('Salting and hashing...');
-				saltAndHash(password, function(hash) {
-					console.log('Attempting insert to database');
-					userCollection.insert({ 'email':email, 'password':hash }, { safe:true }, function(err) {
-						if(!err) {
-							callback(null);
-						} else {
-							callback(err);
-						}
+				console.log('New document!')
+				if(email === null || password === null || email.length < 5 || password.length < 5) {
+					console.log('Invoking callback');
+					callback({ message:"Wrong email or password. Both parameters must have at least length 5" });	
+				} else {
+				//Create the user:
+					console.log('Salting and hashing...');
+					saltAndHash(password, function(hash) {
+						console.log('Attempting insert to database');
+						userCollection.insert({ 'email':email, 'password':hash }, { safe:true }, function(err) {
+							if(!err) {
+								callback(null);
+							} else {
+								callback(err);
+							}
+						});
 					});
-				});
+				}
 			}
-		}
+		});
 	} else {
 		callback({ message:"Email and password are mandatory to create a user." });		
 	}

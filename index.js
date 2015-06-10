@@ -2,42 +2,46 @@ var bodyParser = require('body-parser');
 var finalhandler = require('finalhandler');
 var http = require('http');
 var router = require('router')();
-var util = require('util');
 
+var done;
 var UM = require('./modules/user-manager'); 
 
 //This middleware will populate the req.body with the incoming parameters
-router.use(bodyParser.urlencoded({extended:false}));
+router.use(bodyParser.urlencoded({extended:false}))
 
 router.post('/login', function(req, res) {
 	//Security checks are done in the UM package:
 	UM.login(req.body.user,req.body.password,function(err,t){
 		if(!u) {
-			res.send(err,400);
+			done(err.message)
 		} else {
-			res.send({'sessionToken':t},200);
+			res.statusCode = 200
+			res.setHeader('Content-Type','text/plain')
+			res.end(t,200)
 		}
 	});
 });
 
 router.post('/questionnaire', function(req, res) {
 	if(req.cookies != "undefined" && (req.cookies.user == "undefined" || req.cookies.token == "undefined")) {
-		res.send({message:"Username or password missing. POST request most be authenticated"},400);
+		done("Username or password missing. POST request most be authenticated")
 	} else {
 		//Check for valid token
 		UM.processToken(req.cookies.user, req.cookies.token, function(err,u){
 			if(!u) {
-				res.send(err,400);
+				done(err.message)
 			} else if(req.answers != "undefined") {
 				UM.update(u,req.answers, function(err) {
 					if(err) {
-						res.send(err,400);
+						done(err.message)
 					} else {
-						res.send({},200);
+						res.statusCode = 200
+						res.setHeader('Content-Type','text/plain')			
+						res.end('ok')
 					}
 				});				
 			} else {
-				res.send({message:"Malformed POST request: answers not found"},400);
+				done("Malformed POST request: answers not found")
 			}
 		});
 	}
@@ -47,20 +51,20 @@ router.post('/user', function(req, res) {
 	if(req.body != "undefined") {
 		UM.create(req.body.email,req.body.password,function(err){
 			if(err) {
-				done(err)
+				done(err.message)
 			} else {
 				res.statusCode = 200
 				res,setHeader('Content-Type','text/plain')
-				res.end('ok');
+				res.end('ok')
 			}
 		});
 	} else {
-		done({ message:"Request does not have a body" })
+		done("Request does not have a body")
 	}
 });
 
 var server = http.createServer(function(req,res){
-		var done = finalhandler(req,res)
+	done = finalhandler(req,res)
         router(req, res, done)
 });
 

@@ -1,0 +1,21 @@
+{
+  "name": "JAJKOWebService",
+  "version": "1.0.0",
+  "description": "A prototype of the future webservice that will power the Lirean JAJKO App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "keywords": [
+    "webservice"
+  ],
+  "author": "Esteban Garro",
+  "license": "BSD",
+  "dependencies": {
+    "router": "~1.1.1",
+    "mongodb": "~2.0.33",
+    "finalhandler": "~0.3.6",
+    "body-parser": "~1.12.4"
+  }
+}

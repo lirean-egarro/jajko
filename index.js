@@ -54,7 +54,7 @@ router.post('/user', function(req, res) {
 				done(err.message)
 			} else {
 				res.statusCode = 200
-				res,setHeader('Content-Type','text/plain')
+				res.setHeader('Content-Type','text/plain')
 				res.end('ok')
 			}
 		});

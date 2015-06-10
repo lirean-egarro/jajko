@@ -51,22 +51,17 @@ exports.processToken = function(email,token,callback) {
 exports.create = function(email,password,callback) {
 	if(email != "undefined" && password != "undefined") {
 		userCollection.findOne({'email':email},function(err,doc){
-			console.log(util.inspect(doc,false,null));
 			if(doc) {
-				console.log('Found a document!')
 				callback({ message:"There seems to be a user with this email address." });
 			} else {
-				console.log('New document!')
 				if(email === null || password === null || email.length < 5 || password.length < 5) {
-					console.log('Invoking callback');
 					callback({ message:"Wrong email or password. Both parameters must have at least length 5" });	
 				} else {
 				//Create the user:
-					console.log('Salting and hashing...');
 					saltAndHash(password, function(hash) {
-						console.log('Attempting insert to database');
 						userCollection.insert({ 'email':email, 'password':hash }, { safe:true }, function(err) {
 							if(!err) {
+								console.log("New user added to DB")
 								callback(null);
 							} else {
 								callback(err);

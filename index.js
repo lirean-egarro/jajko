@@ -33,15 +33,15 @@ router.post('/login', function(req, res) {
 });
 
 router.post('/questionnaire', function(req, res) {
-	if(req.cookies != undefined && (req.cookies.user == undefined || req.cookies.token == undefined)) {
+	if(req.body.cookies != undefined && (req.body.cookies.user == undefined || req.body.cookies.token == undefined)) {
 		done("Username or password missing. POST request most be authenticated")
 	} else {
 		//Check for valid token
-		UM.processToken(req.cookies.user, req.cookies.token, function(err,u){
+		UM.processToken(req.body.cookies.user, req.body.cookies.token, function(err,u){
 			if(!u) {
 				done(err.message)
-			} else if(req.answers != undefined) {
-				UM.update(u,req.answers, function(err) {
+			} else if(req.body.answers != undefined) {
+				UM.update(u,req.body.answers, function(err) {
 					if(err) {
 						done(err.message)
 					} else {

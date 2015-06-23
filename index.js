@@ -11,8 +11,8 @@ router.use(bodyParser.json())
 
 router.post('/login', function(req, res) {
 	//Security checks are done in the UM package:
-        if(req.body != undefined) {
-	   UM.login(req.body.user,req.body.password,function(err,t){
+    if(req.body != undefined) {
+		UM.login(req.body.user,req.body.password,function(err,t){
 		if(err) {
 			done(err.message)
 		} else {
@@ -20,10 +20,10 @@ router.post('/login', function(req, res) {
 			res.setHeader('Content-Type','text/plain')
 			res.end(t,200)
 		}
-	   });
-        } else {
-                done("Request does not have a body")
-        }
+		});
+    } else {
+            done("Request does not have a body")
+    }
 });
 
 router.post('/questionnaire', function(req, res) {
@@ -53,7 +53,6 @@ router.post('/questionnaire', function(req, res) {
 
 router.post('/user', function(req, res) {
 	if(req.body != undefined) {
-		console.log(req.body)
 		UM.create(req.body.email,req.body.password,function(err){
 			if(err) {
 				done(err.message)

@@ -20,22 +20,28 @@ function createDBConnection(onCreate) {
 /* Exported functions. */
 
 exports.login = function(email,password,callback) {
-	userCollection.findOne({'email':email,'password':password},function(err,doc){
-		if(doc) {
-			//Here we will generate a token for this session and store in the document!
-			var token = generateToken();
-			doc.token = token;
-			userCollection.save(doc, {safe:true}, function(err) {
-				if(!err) {	
-					callback(null,token);
+	if(email != undefined && password != undefined) {
+		saltAndHash(password, function(hash) {
+			userCollection.findOne({'email':email,'password':password},function(err,doc){
+				if(doc) {
+					//Here we will generate a token for this session and store in the document!
+					var token = generateToken();
+					doc.token = token;
+					userCollection.save(doc, {safe:true}, function(err) {
+						if(!err) {	
+							callback(null,token);
+						} else {
+							callback({ message:"Error processing login. Cannot store session token? " + err },null);
+						}
+					});
 				} else {
-					callback({ message:"Error processing login. Cannot store session token? " + err },null);
+					callback({ message:"Wrong credentials. Please try again." },null);	
 				}
 			});
-		} else {
-			callback({ message:"Wrong credentials. Please try again." },null);	
-		}
-	});
+		});
+	} else {
+		callback({ message:"Email and password are mandatory to login." });		
+	}
 }
 
 exports.processToken = function(email,token,callback) {

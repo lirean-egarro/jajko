@@ -22,7 +22,7 @@ function createDBConnection(onCreate) {
 exports.login = function(email,password,callback) {
 	if(email != undefined && password != undefined) {
 		saltAndHash(password, function(hash) {
-			userCollection.findOne({'email':email,'password':password},function(err,doc){
+			userCollection.findOne({'email':email,'password':hash},function(err,doc){
 				if(doc) {
 					//Here we will generate a token for this session and store in the document!
 					var token = generateToken();

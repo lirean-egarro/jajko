@@ -49,7 +49,7 @@ exports.processToken = function(email,token,callback) {
 }
 
 exports.create = function(email,password,callback) {
-	if(email != "undefined" && password != "undefined") {
+	if(email != undefined && password != undefined) {
 		userCollection.findOne({'email':email},function(err,doc){
 			if(doc) {
 				callback({ message:"There seems to be a user with this email address." });

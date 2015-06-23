@@ -29,7 +29,11 @@ exports.login = function(email,password,callback) {
 					doc.token = token;
 					userCollection.save(doc, {safe:true}, function(err) {
 						if(!err) {	
-							callback(null,token);
+							if(doc.answers) {
+								callback(null,token);
+							} else {
+								callback({ message:"User has not submitted questionnaire!" },token);
+							}
 						} else {
 							callback({ message:"Error processing login. Cannot store session token? " + err },null);
 						}

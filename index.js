@@ -13,13 +13,19 @@ router.post('/login', function(req, res) {
 	//Security checks are done in the UM package:
     if(req.body != undefined) {
 		UM.login(req.body.user,req.body.password,function(err,t){
-		if(err) {
-			done(err.message)
-		} else {
-			res.statusCode = 200
-			res.setHeader('Content-Type','text/plain')
-			res.end(t,200)
-		}
+			if(!t) {
+				done(err.message)
+			} else {
+				if(!err) {
+					res.statusCode = 200
+					res.setHeader('Content-Type','text/plain')
+					res.end(t)
+				} else {
+					res.statusCode = 210 //User exists, but hasnt completed the required questionnaire.
+					res.setHeader('Content-Type','text/plain')
+					res.end(t)
+				}
+			}
 		});
     } else {
             done("Request does not have a body")
@@ -57,9 +63,15 @@ router.post('/user', function(req, res) {
 			if(err) {
 				done(err.message)
 			} else {
-				res.statusCode = 200
-				res.setHeader('Content-Type','text/plain')
-				res.end('ok')
+				UM.login(req.body.email,req.body.password,function(err,t){
+					if(err) {
+						done(err.message)
+					} else {
+						res.statusCode = 200
+						res.setHeader('Content-Type','text/plain')
+						res.end(t)
+					}
+				});
 			}
 		});
 	} else {

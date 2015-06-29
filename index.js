@@ -57,6 +57,31 @@ router.post('/questionnaire', function(req, res) {
 	}
 });
 
+router.post('/experience', function(req, res) {
+	if(req.body.cookies != undefined && (req.body.cookies.user == undefined || req.body.cookies.token == undefined)) {
+		done("2) Username or password missing. POST request most be authenticated")
+	} else {
+		//Check for valid token
+		UM.processToken(req.body.cookies.user, req.body.cookies.token, function(err,u){
+			if(!u) {
+				done(err.message)
+			} else if(req.body.experience != undefined) {
+				UM.updateAdd(u,req.body.experience, function(err) {
+					if(err) {
+						done(err.message)
+					} else {
+						res.statusCode = 200
+						res.setHeader('Content-Type','text/plain')			
+						res.end('ok')
+					}
+				});				
+			} else {
+				done("Malformed POST request: experience not found")
+			}
+		});
+	}
+});
+
 router.post('/user', function(req, res) {
 	if(req.body != undefined) {
 		UM.create(req.body.email,req.body.password,function(err){

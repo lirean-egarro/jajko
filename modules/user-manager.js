@@ -101,6 +101,21 @@ exports.update = function(user,answers,callback) {
 	}
 }
 
+exports.updateAdd = function(user,experience,callback) {
+	if(user.email != null && user.token != null && user.password != null) {
+		user.experience = experience;
+		userCollection.save(user, { safe: true }, function(err) {
+			if(!err) {
+				callback(null);
+			} else {
+				callback({ message:"Error updating record experience: " + err });
+			}
+		});
+	} else {
+		callback({ message:"Invalid user object provided while updating record experience" });
+	}
+}
+
 /* Private encryption & validation methods */
 
 var generateToken = function() {

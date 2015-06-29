@@ -89,12 +89,12 @@ router.post('/user', function(req, res) {
 				done(err.message)
 			} else {
 				UM.login(req.body.email,req.body.password,function(err,t){
-					if(err) {
-						done(err.message)
-					} else {
+					if(t) {
 						res.statusCode = 200
 						res.setHeader('Content-Type','text/plain')
 						res.end(t)
+					} else {
+						done("Error generating token after creating user")
 					}
 				});
 			}

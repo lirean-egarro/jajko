@@ -90,6 +90,7 @@ router.post('/user', function(req, res) {
 			} else {
 				UM.login(req.body.email,req.body.password,function(err,t){
 					if(t) {
+						console.log("Generated token:",t)
 						res.statusCode = 200
 						res.setHeader('Content-Type','text/plain')
 						res.end(t)

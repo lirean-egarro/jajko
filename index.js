@@ -58,23 +58,18 @@ router.post('/questionnaire', function(req, res) {
 });
 
 router.get('/experience', function(req, res) {
-	if(req.body.cookies != undefined && (req.body.cookies.user == undefined || req.body.cookies.token == undefined)) {
-		done("2) Username or password missing. POST request most be authenticated")
-	} else {
-		//Check for valid token
-		UM.processToken(req.body.cookies.user, req.body.cookies.token, function(err,u){
-			if(!u) {
-				done(err.message)
-			} else if(u.experience != undefined) {
-				res.statusCode = 200
-				res.setHeader('Content-Type','application/json')
-				var json = JSON.stringify(u.experience)			
-				res.end(json)
-			} else {
-				done("User doesn't have experience set")
-			}
-		});
-	}
+	UM.processToken(req.params.user, req.params.token, function(err,u){
+		if(!u) {
+			done(err.message)
+		} else if(u.experience != undefined) {
+			res.statusCode = 200
+			res.setHeader('Content-Type','application/json')
+			var json = JSON.stringify(u.experience)			
+			res.end(json)
+		} else {
+			done("User doesn't have experience set")
+		}
+	});
 });
 
 router.post('/experience', function(req, res) {

@@ -16,6 +16,7 @@
     "router": "~1.1.1",
     "mongodb": "~2.0.33",
     "finalhandler": "~0.3.6",
-    "body-parser": "~1.12.4"
+    "body-parser": "~1.12.4",
+    "querystring": "~0.2.0"
   }
 }

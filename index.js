@@ -2,12 +2,17 @@ var bodyParser = require('body-parser');
 var finalhandler = require('finalhandler');
 var http = require('http');
 var router = require('router')();
+var queryString = require('querystring');
 
 var done;
 var UM = require('./modules/user-manager'); 
 
 //This middleware will populate the req.body with the incoming parameters
 router.use(bodyParser.json())
+router.use('/experience', function(req, res, next) {
+  req.query = queryString.parse(req.url.split("?")[1])	
+  next()
+})
 
 router.post('/login', function(req, res) {
 	//Security checks are done in the UM package:
@@ -58,7 +63,7 @@ router.post('/questionnaire', function(req, res) {
 });
 
 router.get('/experience', function(req, res) {
-	UM.processToken(req.params.user, req.params.token, function(err,u){
+	UM.processToken(req.query.user, req.query.token, function(err,u){
 		if(!u) {
 			done(err.message)
 		} else if(u.experience != undefined) {
